@@ -4,27 +4,53 @@ import os
 import sys
 import subprocess
 
+def bash(command):  
+### I dont wont to create class. I think it is better choise here
+### Correct me if I'm wrong
+  process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  stdoutput, stderroutput = process.communicate()
+  ###
+  ### debug section
+  ###
+  #print 'BEGIN  stdoutput '
+  #print stdoutput
+  #print 'END  stdoutput '
+  #print 'BEGIN  stderroutput '
+  #print stderroutput
+  #print 'END  stderroutput '
+  ###
+  if stderroutput != '':
+    if 'fatal:' in stderroutput.split():
+      raise Exception(stderroutput)
+    print stderroutput
+  return stdoutput
+
 class gits(object):
   """docstring for gits"""
   def __init__(self, git1, git2):
     super(gits, self).__init__()
     self.git1 = git1
     self.git2 = git2
-  def git_subtree(self):
+    self.check_git = 'git rev-parse --git-dir'
+    self.push_origin_master_str = 'git push origin master'
+  def git_subtree(self):            # execute command git subtree add etc
     a = self.git1
     b = self.git2
     os.chdir(b)
-    c = 'git subtree add --prefix=git1 '+git1+' master'
-    #print c
-    process = subprocess.Popen(c, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdoutput, stderroutput = process.communicate()
-    #print os.getcwd() + ' pwdforsubtree '+stdoutput+ stderroutput + '  errs'
-    #print a + '  git2 from class gits'
-    #print b + '  git1 from class gits'
+    c = 'git subtree add --prefix='+os.path.basename(self.git1)+' '+self.git1+' master'
+    print c
+    bash(c)
+  def is_it_git_repo(self,dir):     # here we check if it is a git repo in dir
+    pwd = os.getcwd() 
+    os.chdir(dir) 
+    bash(self.check_git)
+  def push_origin_master(self):
+    bash(self.push_origin_master_str)
+    pass
 
-
-
-
+###########################################################
+### This stuff should be rewritten
+###########################################################
 class tags(object):
   """docstring for tags"""
   def __init__(self, git2):
@@ -33,8 +59,6 @@ class tags(object):
     self.git2 = git2
     self.vgitdescribe = 'git describe --tags'
     self.add_tag_str = 'git tag -f'
-      ### fatal: Not a git repository (or any of the parent directories): .git
-      ### fatal: No names found, cannot describe anything.
   def check_tag(self, dir):
     pwd = os.getcwd()
     os.chdir(dir)
@@ -53,7 +77,6 @@ class tags(object):
       else:
         return None
   def add_tag(self):
-    #print a + '  git2 from class gits'
     tag = self.check_tag(self.git2)
     if tag == None:
       tag = self.check_tag(self.git1)
@@ -71,9 +94,8 @@ class tags(object):
     print stdoutput + stderroutput + 'errs & out'
     print os.getcwd() + ' pwd \n'
 
-
-def do_stuff(git1,git2):
-  pwd=  os.getcwd()
+def do_stuff_and_tags(git1,git2):
+  pwd =  os.getcwd()
   a = gits(git1,git2)
   os.chdir(pwd)
   b = tags(git2)
@@ -87,21 +109,39 @@ def do_stuff(git1,git2):
   b.add_tag()
   print "Job done!"
   pass
+###########################################################
+### This stuff should be rewritten END                     
+########################################################### 
 
+def do_stuff(git1,git2):
+  a = gits(git1,git2)
+  a.is_it_git_repo(git1)
+  a.is_it_git_repo(git2)
+  a.git_subtree()
+  a.push_origin_master()
+  print "Job done!"
+  pass
 
-# Calls the above functions with interesting inputs.
 def main():
-  print 'Git task'
-if len(sys.argv) != 3:
-  print 'usage: ./try.py git1 folder git2 folder'
-  sys.exit(1)
-git1 = sys.argv[1]
-git2 = sys.argv[2]
-if os.path.isdir(git1) and os.path.isdir(git2):
-  do_stuff(git1,git2)
-else:
-  print 'unknown option: ' + git1 +"  "+git2+" ;"
-  sys.exit(1)
-
+  print "a?"
+  if len(sys.argv) not in range(3,5): # 5 is not in range!
+    print 'usage: ./try.py git1 folder git2 folder (optional -t to merge tags)'
+    print 'we will merge repo1 ---> repo2'
+    sys.exit(1)
+  git1 = os.path.abspath(sys.argv[1]) ### full path everytime
+  git2 = os.path.abspath(sys.argv[2])
+  if len(sys.argv) == 4: tag_arg = sys.argv[3]
+  else: tag_arg = None
+  if os.path.isdir(git1) and os.path.isdir(git2): #if you with to use tags,
+    if tag_arg == '-t':                           #but i don't reccomend for now 
+      do_stuff_and_tags(git1,git2)
+    else:
+      do_stuff(git1,git2)                         # start algorythm
+  else:
+    print 'unknown option: ' + git1 +"  "+git2+" ;"
+    sys.exit(1)
+  
 if __name__ == '__main__':
   main()
+
+   #Who is Darkfury?
