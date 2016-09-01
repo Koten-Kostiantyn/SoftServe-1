@@ -3,8 +3,9 @@
 import os
 import sys
 import subprocess
+import time #DELTHIS
 
-def bash(command):  
+def bash(command):  # here we execute bash commands (git subtree, etc)
 ### I dont wont to create class. I think it is better choise here
 ### Correct me if I'm wrong
   process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -12,12 +13,12 @@ def bash(command):
   ###
   ### debug section
   ###
-  #print 'BEGIN  stdoutput '
-  #print stdoutput
-  #print 'END  stdoutput '
-  #print 'BEGIN  stderroutput '
-  #print stderroutput
-  #print 'END  stderroutput '
+  print 'BEGIN  stdoutput '
+  print stdoutput
+  print 'END  stdoutput '
+  print 'BEGIN  stderroutput '
+  print stderroutput
+  print 'END  stderroutput '
   ###
   if stderroutput != '':
     if 'fatal:' in stderroutput.split():
@@ -31,14 +32,23 @@ class gits(object):
     super(gits, self).__init__()
     self.git1 = git1
     self.git2 = git2
+    self.subtree = 'git subtree add --prefix='
+    self.branch_list = []
     self.check_git = 'git rev-parse --git-dir'
     self.push_origin_master_str = 'git push origin master'
-  def git_subtree(self):            # execute command git subtree add etc
+    self.branch_str_get = "git remote show origin | grep tracked | awk '{print $1}' ORS=' '"
+  def git_subtree(self,branch):            # execute command git subtree add etc
     a = self.git1
     b = self.git2
     os.chdir(b)
-    c = 'git subtree add --prefix='+os.path.basename(self.git1)+' '+self.git1+' master'
+    if branch != 'master':
+      d = 'git checkout -b '+branch+' origin/'+branch
+      print d
+      bash(d)
+    #add if branch not master go: git checkout -b sshfs origin/sshfs
+    c = self.subtree+os.path.basename(a)+'_'+branch+' '+a+' '+branch
     print c
+    time.sleep(10) #DELTHIS
     bash(c)
   def is_it_git_repo(self,dir):     # here we check if it is a git repo in dir
     pwd = os.getcwd() 
@@ -47,6 +57,16 @@ class gits(object):
   def push_origin_master(self):
     bash(self.push_origin_master_str)
     pass
+  def get_branches(self):
+    a = self.git1
+    os.chdir(a)
+    branch_str = bash(self.branch_str_get)
+    list = branch_str.split()
+    a = []
+    print self.branch_str_get
+    for x in list:
+      a.append(x)
+    return a
 
 ###########################################################
 ### This stuff should be rewritten
@@ -117,13 +137,14 @@ def do_stuff(git1,git2):
   a = gits(git1,git2)
   a.is_it_git_repo(git1)
   a.is_it_git_repo(git2)
-  a.git_subtree()
-  a.push_origin_master()
+  branches = a.get_branches()
+  for x in branches:
+    a.git_subtree(x)
+  #a.push_origin_master()
   print "Job done!"
   pass
 
 def main():
-  print "a?"
   if len(sys.argv) not in range(3,5): # 5 is not in range!
     print 'usage: ./try.py git1 folder git2 folder (optional -t to merge tags)'
     print 'we will merge repo1 ---> repo2'
@@ -143,5 +164,3 @@ def main():
   
 if __name__ == '__main__':
   main()
-
-   #Who is Darkfury?
