@@ -1,25 +1,23 @@
 #!/usr/bin/python -tt
+# ver 1.2
+# kotkotkot@i.ua
 
 import os
 import sys
 import subprocess
-import time #DELTHIS
 
-def bash(command):  # here we execute bash commands (git subtree, etc)
+def bash(command,debug=0):  # here we execute bash commands (git subtree, etc)
 ### I dont wont to create class. I think it is better choise here
 ### Correct me if I'm wrong
   process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   stdoutput, stderroutput = process.communicate()
-  ###
-  ### debug section
-  ###
-  print 'BEGIN  stdoutput '
-  print stdoutput
-  print 'END  stdoutput '
-  print 'BEGIN  stderroutput '
-  print stderroutput
-  print 'END  stderroutput '
-  ###
+  if debug == 1:          # debug section, show all output of bash commands
+    print 'BEGIN  stdoutput '
+    print stdoutput
+    print 'END  stdoutput '
+    print 'BEGIN  stderroutput '
+    print stderroutput
+    print 'END  stderroutput '
   if stderroutput != '':
     if 'fatal:' in stderroutput.split():
       raise Exception(stderroutput)
@@ -37,27 +35,24 @@ class gits(object):
     self.check_git = 'git rev-parse --git-dir'
     self.push_origin_master_str = 'git push origin master'
     self.branch_str_get = "git remote show origin | grep tracked | awk '{print $1}' ORS=' '"
-  def git_subtree(self,branch):            # execute command git subtree add etc
+  def git_subtree(self,branch,count):            # execute command git subtree
     a = self.git1
-    b = self.git2
-    os.chdir(b)
-    if branch != 'master':
-      d = 'git checkout -b '+branch+' origin/'+branch
-      print d
-      bash(d)
-    #add if branch not master go: git checkout -b sshfs origin/sshfs
-    c = self.subtree+os.path.basename(a)+'_'+branch+' '+a+' '+branch
+    self.checkout(branch)
+    os.chdir(self.git2)
+    if count != 1:
+      c = self.subtree+os.path.basename(a)+'_'+branch+' '+a+' '+branch
+    else:
+      c = self.subtree+os.path.basename(a)+' '+a+' '+branch
     print c
-    time.sleep(10) #DELTHIS
     bash(c)
-  def is_it_git_repo(self,dir):     # here we check if it is a git repo in dir
+  def is_it_git_repo(self,dir):     # here we check if it is a git repo in directory
     pwd = os.getcwd() 
     os.chdir(dir) 
     bash(self.check_git)
   def push_origin_master(self):
     bash(self.push_origin_master_str)
     pass
-  def get_branches(self):
+  def get_branches(self):       # using magic(git,grep,awk) we getting all branch names
     a = self.git1
     os.chdir(a)
     branch_str = bash(self.branch_str_get)
@@ -67,6 +62,13 @@ class gits(object):
     for x in list:
       a.append(x)
     return a
+  def checkout(self,branch):      # creating local branch to able to do git subtree
+    os.chdir(self.git1)
+    if branch != 'master':
+      d = 'git checkout -b '+branch+' origin/'+branch
+      print d
+      bash(d)
+    pass
 
 ###########################################################
 ### This stuff should be rewritten
@@ -138,8 +140,10 @@ def do_stuff(git1,git2):
   a.is_it_git_repo(git1)
   a.is_it_git_repo(git2)
   branches = a.get_branches()
+  print len(branches)
+  print 'lenbrabch'
   for x in branches:
-    a.git_subtree(x)
+    a.git_subtree(x,len(branches))
   #a.push_origin_master()
   print "Job done!"
   pass
