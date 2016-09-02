@@ -33,7 +33,7 @@ class gits(object):
     self.subtree = 'git subtree add --prefix='
     self.branch_list = []
     self.check_git = 'git rev-parse --git-dir'
-    self.push_origin_master_str = 'git push origin master'
+    self.push_str = 'git push'
     self.branch_str_get = "git remote show origin | grep tracked | awk '{print $1}' ORS=' '"
   def git_subtree(self,branch,count):            # execute command git subtree
     a = self.git1
@@ -49,8 +49,8 @@ class gits(object):
     pwd = os.getcwd() 
     os.chdir(dir) 
     bash(self.check_git)
-  def push_origin_master(self):
-    bash(self.push_origin_master_str)
+  def push(self):
+    bash(self.push_str)
     pass
   def get_branches(self):       # using magic(git,grep,awk) we getting all branch names
     a = self.git1
@@ -144,7 +144,7 @@ def do_stuff(git1,git2):
   print 'lenbrabch'
   for x in branches:
     a.git_subtree(x,len(branches))
-  #a.push_origin_master()
+  a.push()
   print "Job done!"
   pass
 
