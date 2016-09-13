@@ -1,7 +1,7 @@
 Above are folders with working Dockerfiles for ubuntu and debian.
 For some reason sometimes it fail to [build](https://hub.docker.com/r/oookotooo/fake-switches/builds/), without making any changes  
 
-Full Description for oookotooo/fake-switches
+Full Description for [oookotooo/fake-switches](https://hub.docker.com/r/oookotooo/fake-switches/)
 ============================================
 This docker repository have 2 tags: [`latest`](https://github.com/oookotooo/SoftServe-1/blob/master/fake-switches-dockerfiles/fake-sw-debian/Dockerfile) (based on debian python 2.7.12 image) and [`ubuntu`](https://github.com/oookotooo/SoftServe-1/blob/master/fake-switches-dockerfiles/fake-sw-ubuntu/Dockerfile).  
 Use any of this, `latest` should work fine.
