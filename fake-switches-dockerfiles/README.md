@@ -1,7 +1,32 @@
-Here are folders with working Dockerfiles  
-For some reason it fails in 50% of [builds](https://hub.docker.com/r/oookotooo/fake-switches-debian/builds/), without making any changes  
-So here a guide for installing it locally(note, it also could fail 1-2 times, but go ok next time):  
+Above are folders with working Dockerfiles for ubuntu and debian.
+For some reason sometimes it fail to [build](https://hub.docker.com/r/oookotooo/fake-switches/builds/), without making any changes  
+
+Full Description for oookotooo/fake-switches
+============================================
+This docker repository have 2 tags: [`latest`](https://github.com/oookotooo/SoftServe-1/blob/master/fake-switches-dockerfiles/fake-sw-debian/Dockerfile) (based on debian python 2.7.12 image) and [`ubuntu`](https://github.com/oookotooo/SoftServe-1/blob/master/fake-switches-dockerfiles/fake-sw-ubuntu/Dockerfile).  
+Use any of this, `latest` should work fine.
+To run it:
+```
+docker run -p 11001:11001 -d oookotooo/fake-switches
+ssh root@localhost -p 11001
+```
+or just  
+`docker run -Pd oookotooo/fake-switches`  
   
+if you want special config or non-cisco router, do:  
+```
+docker run -P -it --entrypoint=/bin/bash oookotooo/fake-switches
+vi start.py
+```
+Change here everything as you wish and run.  
+```
+. .tox/py27/bin/activate
+python start.py &
+```
+
+Guide for installing it locally(note, it also could fail once, but go ok next time):  
+====================================================================================
+
 We will install it in /tmp/app  
   
 installing basic stuff (note, fake-switches 1.1.6 does not work with python 3):  
