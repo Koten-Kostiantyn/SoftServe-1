@@ -32,15 +32,15 @@ pip install pexpect
 pip install flexmock
 pip install ncclient
 ```
-`sudo python setup.py install`
+`sudo python setup.py install`  
 fix SSHException: Signature verification (ssh-rsa) failed  
-`apt-get install -y openssl`
+`apt-get install -y openssl`  
 switch repo to latest stable release  
-`git checkout tags/1.1.6`
+`git checkout tags/1.1.6`  
 installation process in /tmp/app/fake-switches, it is long process, about 10 min on i5  
-`tox -r`
+`tox -r`  
 now let's generate router (cisco for this example)  
-`vi start.py`
+`vi start.py`  
 insert this code config, or any other  
 ```
 from twisted.internet import reactor
@@ -62,5 +62,5 @@ now start reactor!
 python /tmp/app/fake-switches/start.py &
 ```
 now you can ssh to router:  
-`ssh root@localhost -p 11001`
+`ssh root@localhost -p 11001`  
 The default password should be "root". Then the enable password is "", simply press enter.  
