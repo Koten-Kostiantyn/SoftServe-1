@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM python:2.7.12
 
 MAINTAINER Kinebas Kostiantyn, https://github.com/oookotooo, version 1.0, release latest
 
@@ -15,7 +15,7 @@ RUN git clone -q https://github.com/internap/fake-switches.git
 WORKDIR /tmp/app/fake-switches
 
 # this stuff needed for python and fix insecureplatformwarning:
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-lxml python-dev libffi-dev libssl-dev telnet python python-pip
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y python-lxml python-dev libffi-dev libssl-dev telnet telnetd python python-pip
 
 #now install pip reqiuerements:
 RUN pip install tox
