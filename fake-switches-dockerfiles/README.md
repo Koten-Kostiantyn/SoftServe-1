@@ -24,7 +24,7 @@ Change here everything as you wish and run.
 python start.py &
 ```
 
-Guide for installing it locally(note, it also could fail once, but go ok next time):  
+Guide for installing it locally (note, it also could fail once, but go ok next time):  
 ====================================================================================
 
 We will install it in /tmp/app  
