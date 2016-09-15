@@ -1,0 +1,21 @@
+---
+- hosts: unl
+  gather_facts: no
+  connection: local
+
+  tasks:
+  - name: Executing command {{ CMD|default('show run') }}
+    ios_command:
+      commands: "{{ CMD|default('show run') }}"
+      host: "{{ inventory_hostname }}"
+      username: admin
+      password: cisco
+    register: output
+
+  - name: print command output
+    debug: var=output
+
+  - name: displayed {{ CMD|default('show run') }}
+    debug: msg=command_executed_{{ CMD|default('show run') }}
+ 
+
