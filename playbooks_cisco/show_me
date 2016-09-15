@@ -1,0 +1,22 @@
+---
+- hosts: unl
+  gather_facts: no
+  connection: local
+
+  tasks:
+  - name: SHOW ME {{ VAR|default('run') }}
+    ios_command:
+      commands:
+      - show {{ VAR|default('run') }}
+      host: "{{ inventory_hostname }}"
+      username: admin
+      password: cisco
+    register: output
+
+  - name: print data
+    debug: var=output
+
+  - name: displayed {{ VAR|default('run') }}
+    debug: msg=show_{{ VAR|default('run') }}
+ 
+

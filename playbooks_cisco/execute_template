@@ -1,0 +1,19 @@
+---
+- hosts: unl
+  gather_facts: no
+  connection: local
+
+  tasks:
+  - name: executed template
+    ios_template:
+      host: "{{ inventory_hostname }}"
+      username: admin
+      password: cisco
+      authorize: true
+      backup: true
+      include_defaults: false
+      src: "execute_template.txt"
+    register: template
+
+  - name: print command template
+    debug: var=template

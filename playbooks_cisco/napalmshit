@@ -1,0 +1,15 @@
+---
+- hosts: unl
+  gather_facts: no
+  connection: local
+
+  tasks:
+  - name: Push configuration with napalm
+    napalm_install_config: 
+      hostname: "{{ inventory_hostname }}"
+      username: admin
+      password: cisco
+      dev_os: ios
+      config_file: /home/kkin/napalm_demo/playbooks/execute_template.txt
+      commit_changes: False
+      diff_file: initial.diff 

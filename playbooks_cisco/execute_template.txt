@@ -1,0 +1,4 @@
+snmp-server contact thisis@notmymail.com
+snmp-server community cisco ro
+snmp-server community private rw
+snmp-server enable traps isdn

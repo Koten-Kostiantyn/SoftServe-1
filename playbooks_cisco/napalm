@@ -1,0 +1,30 @@
+---
+- hosts: unl
+  gather_facts: no
+  connection: local
+
+  tasks:
+  - name: ios_command 'show version'
+    ios_command:
+      commands:
+      - show version
+      host: "{{ inventory_hostname }}"
+      username: admin
+      password: cisco
+    register: output
+
+#  - name: print conf
+#    debug: var=output
+# should add include_defaults: false from ansible ios_template module for this working fine!
+
+  - name: GET FACTS
+    napalm_get_facts:
+      hostname: "{{ inventory_hostname }}"
+      username: admin
+      dev_os: ios
+      password: cisco
+      filter: 'facts,interfaces,bgp_neighbors'
+    register: result
+
+  - name: print data
+    debug: var=result
