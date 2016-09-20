@@ -1,0 +1,26 @@
+---
+
+## base 
+
+user: root
+passwd: Napalmtest
+config_dir: /Users/elisa/inex/napalm_demo/configs
+
+## system 
+
+primary_dns_server: '8.8.8.8'
+primary_ntp_server: '81.234.134.160'
+secondary_ntp_server: '130.236.254.17'
+
+## vlans
+
+vlans:
+  - id: 100
+    description: production
+  - id: 200
+    description: test
+  - id: 300
+    description: test2
+  - id: 400
+    description: test3
+
