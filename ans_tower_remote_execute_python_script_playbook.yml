@@ -1,0 +1,81 @@
+---
+# run python script on host
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+  - name: remove temporary folder on local machine
+    file:
+      path: /tmp/git_projects_kjasdkjnas
+      state: absent
+
+  - name: create temporary folder on local machine
+    file:
+      path: /tmp/git_projects_kjasdkjnas
+      state: directory
+      mode: 0777
+
+  - name: git clone repository to local machine
+    git:
+      repo: 'git@%%%REPOURL%%%.git'
+      dest: /tmp/git_projects_kjasdkjnas/%%%REPONAME%%%
+      accept_hostkey: True
+
+  - user:
+      name: "{{ansible_ssh_user}}"
+      generate_ssh_key: yes
+      ssh_key_bits: 2048
+      ssh_key_file: ~/.ssh/id_rsa
+
+- hosts: %%%REMOTE_HOST%%%
+  tasks:
+  - name: remove temporary folder on remote server
+    file:
+      path: /tmp/git_projects_kjasdkjnas
+      state: absent
+
+
+  - name: create temporary folder on remote server
+    file:
+      path: /tmp/git_projects_kjasdkjnas/%%%REPONAME%%%/
+      state: directory
+      mode: 0777
+
+  - name: "Add user key to authorized_keys"
+    authorized_key:
+      user: "{{ansible_ssh_user}}"
+      state: present
+      key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+  - name: rsync git repo
+    synchronize:
+      src: /tmp/git_projects_kjasdkjnas/%%%REPONAME%%%/
+      dest: /tmp/git_projects_kjasdkjnas/%%%REPONAME%%%/
+
+  - name: "remove user key from authorized_keys"
+    authorized_key:
+      user: "{{ ansible_ssh_user }}"
+      state: absent
+      key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+  - name: execute python script
+    command: /usr/bin/python /tmp/git_projects_kjasdkjnas/%%%REPONAME%%%/python_script.py
+
+  - name: get log
+    command: /usr/bin/tail -4 /var/log/%%%SOMELOG%%%.log
+    register: log
+
+  - name: remove temporary folder on remote server
+    file:
+      path: /tmp/git_projects_kjasdkjnas
+      state: absent
+
+  - name: show log
+    debug: var=log.stdout_lines
+
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+  - name: remove temporary folder on local machine
+    file:
+      path: /tmp/git_projects_kjasdkjnas
+      state: absent
